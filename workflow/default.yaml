@@ -1,0 +1,128 @@
+# ai_director_bot - 默认流水线
+# 阶段顺序、技能 ID、输入输出约定，供调度逻辑或人工按序执行
+# 协作方式见：docs/工作流设计-与OpenClaw协作方式.md
+
+name: default
+description: 创意 → 剧本 → 分镜表 → 分镜概念/角色/场景 → 服化道 → 定稿分镜 → 运镜/卡点 → 视频（可选）
+
+# 与用户协作的两种模式（每阶段可由用户指定）：
+# - prompts_only: 助手只输出提示词，用户到其他平台生成，再带回或说「继续」
+# - generate_then_approve: 助手产出图/视频，用户审核，通过后再进入下一步
+delivery_modes:
+  - prompts_only
+  - generate_then_approve
+
+# 需要「审核通过」才进入下一步的产出（仅当用户选择 generate_then_approve 时）
+approval_gates:
+  - storyboard_concept_images   # 分镜概念图
+  - costume_reference_images   # 服化道参考图
+  - final_storyboard_images    # 定稿分镜图
+  - video_output               # 成片视频（若有）
+
+stages:
+  - id: S0
+    name: 创意与剧本
+    steps:
+      - skill: s0-script
+        name: 根据创意进行剧本创作的提示词生成
+        input: user_idea
+        output: script
+        status: existing
+
+  - id: S1
+    name: 分镜表
+    steps:
+      - skill: s1-shotlist
+        name: 剧本 → 分镜表/镜头列表
+        input: script
+        output: shotlist
+        status: new
+
+  - id: S2
+    name: 分镜概念与视觉设定
+    steps:
+      - skill: s2-character
+        name: 角色设定/角色卡提示词生成
+        input: [script, shotlist]
+        output: character_cards
+        status: new
+      - skill: s2-scene
+        name: 场景/环境设定提示词生成
+        input: [shotlist, script]
+        output: scene_prompts
+        status: new
+      - skill: s2-storyboard
+        name: 分镜概念的提示词生成
+        input: [shotlist, character_cards, scene_prompts]
+        output: storyboard_concept_images
+        status: existing
+        per_shot: true
+
+  - id: S3
+    name: 服化道与定稿分镜
+    steps:
+      - skill: s3-costume
+        name: 依靠分镜概念图定服化道的提示词生成
+        input: [storyboard_concept_images, shotlist]
+        output: costume_reference_images
+        status: existing
+      - skill: s3-refine
+        name: 依靠服化道等信息垫图完善分镜图的提示词生成
+        input: [storyboard_concept_images, costume_reference_images, character_cards, scene_prompts]
+        output: final_storyboard_images
+        status: existing
+        per_shot: true
+
+  - id: S4
+    name: 运镜与节奏
+    steps:
+      - skill: s4-camera
+        name: 分镜 ↔ 运镜提示词
+        input: [shotlist, final_storyboard_images]
+        output: camera_prompts
+        status: linked
+        link: seedance-camera-prompt
+      - skill: s4-beat
+        name: 音乐卡点/节奏同步提示词
+        input: [final_storyboard_images, bgm_or_rhythm]
+        output: beat_sync_prompts
+        status: linked
+        link: music-beat-sync-prompt
+        optional: true
+
+  - id: S5
+    name: 成片与迭代
+    steps:
+      - skill: s5-video
+        name: 分镜图 + 运镜 → 视频生成提示词
+        input: [final_storyboard_images, camera_prompts]
+        output: video_prompts
+        status: new
+        optional: true
+      - skill: s5-patch
+        name: 单镜头/局部修改提示词
+        input: [current_image, patch_intent]
+        output: patch_prompts
+        status: new
+        use_case: iteration
+      - skill: s5-style
+        name: 风格参考/情绪板 → 画风提示词
+        input: [reference_images_or_film_names, style_keywords]
+        output: global_style_prompt
+        status: new
+        use_case: inject_into_S2_S3
+
+# 产物键说明（供调度时引用）
+artifacts:
+  script: 剧本文本或剧本生成提示词
+  shotlist: 分镜表（镜号、景别、内容、对白、时长等）
+  character_cards: 角色卡/角色参考图提示词
+  scene_prompts: 场景与环境设定提示词
+  storyboard_concept_images: 分镜概念图（按镜）
+  costume_reference_images: 服化道参考图
+  final_storyboard_images: 定稿分镜图（按镜）
+  camera_prompts: 每镜运镜提示词
+  beat_sync_prompts: 音乐卡点提示词
+  video_prompts: 视频生成用提示词
+  patch_prompts: 单镜修改用提示词
+  global_style_prompt: 全局画风描述

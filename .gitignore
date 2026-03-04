@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# Local outputs (若本仓会生成剧本/分镜图等，可忽略)
+output/
+exports/
+*.log
+
+# OpenClaw 导演助手 agent 的会话与状态（勿提交）
+workspace-director/sessions/
+workspace-director/.openclaw/
+
+# Optional: 若技能依赖 node/python 等
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
