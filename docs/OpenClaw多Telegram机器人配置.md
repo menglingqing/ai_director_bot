@@ -1,6 +1,6 @@
 # OpenClaw 连接多个 Telegram 机器人、按会话区分交互
 
-你已有一个 Telegram 机器人接在 OpenClaw 上，现在要再接入一个（例如导演助手 @mlqDirectorbot）。做法是：在同一个 Gateway 下配置 **Telegram 多账号（accounts）**，再用 **bindings** 把不同机器人路由到不同 **Agent**，这样每个机器人对应独立的工作区、记忆和人格，会话自然分开。
+你已有一个 Telegram 机器人接在 OpenClaw 上，现在要再接入一个（例如导演助手）。做法是：在同一个 Gateway 下配置 **Telegram 多账号（accounts）**，再用 **bindings** 把不同机器人路由到不同 **Agent**，这样每个机器人对应独立的工作区、记忆和人格，会话自然分开。
 
 ---
 
@@ -39,7 +39,7 @@
           // 若你之前用环境变量 TELEGRAM_BOT_TOKEN，可继续用，这里写进 config 更清晰
         },
         director: {
-          botToken: "第二个机器人的Token（导演助手 @mlqDirectorbot）",
+          botToken: "第二个机器人的 Token（导演助手，请勿将真实 Token 或 Bot 用户名提交到仓库）",
         },
       },
     },
@@ -156,7 +156,7 @@ Token 不要提交到 Git；可放在环境变量或本机仅自己可读的 con
 4. 重启 Gateway：`openclaw gateway`。
 5. 新 Bot 首次私聊时，若用 pairing，执行：`openclaw pairing list telegram`，再 `openclaw pairing approve telegram <CODE>`（code 针对该 account 的会话）。
 
-之后：和第一个机器人聊 → 通用助手；和第二个机器人（@mlqDirectorbot）聊 → 导演助手，两边的会话和记忆互不干扰。
+之后：和第一个机器人聊 → 通用助手；和第二个机器人（导演助手）聊 → 导演助手，两边的会话和记忆互不干扰。
 
 ---
 

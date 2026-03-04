@@ -2,7 +2,7 @@
 
 ## Bot 链接
 
-- **对话入口**：[@mlqDirectorbot](https://t.me/mlqDirectorbot)
+- **对话入口**：部署完成后，在 OpenClaw 或 Telegram Bot 管理后台查看你的 Bot 链接（格式为 `https://t.me/你的Bot用户名`）。**请勿将真实 Bot 链接或 @ 用户名提交到公开仓库**，以免暴露隐私。
 
 ## Token 与安全
 

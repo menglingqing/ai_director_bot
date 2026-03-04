@@ -2,7 +2,7 @@
 
 从创意到分镜再到成片，一站式调配剧本、分镜、服化道、运镜与视频生成等技能，陪你完成视频制作全流程。**所有工作都在与 OpenClaw 的对话中完成**：助手出提示词或直接出图/出片，你选择「自己拿提示词去别的站生成」或「助手生成、你审核」，审核通过后再进入下一步。
 
-**Telegram Bot**：[@mlqDirectorbot](https://t.me/mlqDirectorbot)（导演助手对话入口）
+**Telegram Bot**：部署后可在 OpenClaw 或 Bot 管理后台配置对话入口，详见 [Telegram 部署说明](config/telegram-deploy.md)。
 
 详见：[工作流设计 - 与 OpenClaw 协作方式](docs/工作流设计-与OpenClaw协作方式.md)。
 
